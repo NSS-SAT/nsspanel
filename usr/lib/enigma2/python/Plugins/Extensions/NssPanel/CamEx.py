@@ -211,7 +211,7 @@ class NSSCamsManager(Screen):
                 self.refresh
                 return
 
-        print self.cmd1
+        print(self.cmd1)
         self.readScripts()
         self.session.nav.playService(self.oldService)
         self.refresh
@@ -298,7 +298,7 @@ class NSSCamsManager(Screen):
         current = None
         try:
             clist = open('/etc/clist.list', 'r')
-            print 'found list'
+            print('found list')
         except:
             return
 
@@ -307,7 +307,7 @@ class NSSCamsManager(Screen):
                 current = line
 
             clist.close()
-        print 'current =', current
+        print('current =', current)
         if os.path.isfile('/etc/autocam.txt') is False:
             alist = open('/etc/autocam.txt', 'w')
             alist.close()
