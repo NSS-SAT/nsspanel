@@ -27,7 +27,7 @@ from Plugins.Extensions.NssPanel.CamEx import NSSCamsManager
 from Tools import Notifications
 from Tools.Directories import resolveFilename, pathExists, SCOPE_MEDIA, copyfile, fileExists
 import xml.etree.cElementTree as x
-import six
+
 
 #lululla
 def ReloadBouquet():
@@ -61,7 +61,7 @@ class util:
     check = 0
 
     def reloadSetting(self):
-        print('Reload settings')
+        print 'Reload settings'
         self.eDVBDB = eDVBDB.getInstance()
         self.eDVBDB.reloadServicelist()
         self.eDVBDB.reloadBouquets()
@@ -271,8 +271,7 @@ class NssMenu(Screen):
     def runFinished(self, retval):
         if fileExists('/tmp/addons.xml'):
             try:
-                loadxml.load(six.binary_type('/tmp/addons.xml',encoding="utf-8"))
-                # loadxml.load('/tmp/addons.xml')
+                loadxml.load('/tmp/addons.xml')
                 remove('/tmp/addons.xml')
                 self['conn'].text = ''
                 self.session.open(ListaFile)
@@ -369,8 +368,6 @@ class ListaFile(Screen):
     def loadData(self):
         del self.list[:]
         for tag in loadxml.tree_list:
-        
-            tag = six.ensure_str(tag) #edit l
             self.list.append((tag[1], tag[1]))
 
         self['list'].setList(self.list)
@@ -428,7 +425,6 @@ class DownloadFile(Screen):
         if not self.container.running():
             self.sel = self['list'].getIndex()
             for tag in loadxml.plugin_list:
-                tag = six.ensure_str(tag) #edit l
                 if tag[0] == u.pluginIndex:
                     if tag[7] == self.sel:
                         u.addonsName = tag[3]
@@ -440,7 +436,6 @@ class DownloadFile(Screen):
     def loadPlugin(self):
         del self.list[:]
         for tag in loadxml.plugin_list:
-            tag = six.ensure_str(tag) #edit l
             if tag[0] == u.pluginIndex:
                 self.list.append((tag[3], tag[3]))
 
@@ -497,7 +492,7 @@ class DownloadFile(Screen):
         self['conn'].text = _('Addon installed succesfully!')
         if u.pluginType.find('Setting') != -1:
             u.reloadSetting()
-            print('Settings reloaded succesfully!')
+            print 'Settings reloaded succesfully!'
             self['conn'].text = _('Settings reloaded succesfully!')
         else:
             self['conn'].text = _('Reload Plugins list\nPlease Wait...')
@@ -519,7 +514,6 @@ class DownloadFile(Screen):
 
     def getAddonsPar(self):
         for tag in loadxml.plugin_list:
-            tag = six.ensure_str(tag) #edit l
             if tag[0] == u.pluginIndex:
                 if tag[3] == u.addonsName:
                     u.filename = tag[2]
@@ -648,7 +642,7 @@ class ManualInstall(Screen):
             #lululla only settings.zip named files that contain non-folder settings - 
             elif u.filename.find('settings.zip') != -1 : #or u.filename.find('setting') != -1:
                 dest = '/tmp/' + u.filename
-                print('Dest= ', dest)
+                print 'Dest= ', dest
                 os.system('rm -rf /etc/enigma2/lamedb')
                 os.system('rm -rf /etc/enigma2/*.radio')
                 os.system('rm -rf /etc/enigma2/*.tv')
@@ -657,9 +651,9 @@ class ManualInstall(Screen):
                 fdest1 = "/tmp/settings" 
                 fdest2 = "/etc/enigma2"
                 cmd1 = ("unzip -o -q %s -d %s") % (dest,fdest1)
-                print("cmd1 =", cmd1)
+                print "cmd1 =", cmd1
                 cmd2 = ("cp -rf %s/* %s") % (fdest1,fdest2)
-                print("cmd2 =", cmd2)
+                print "cmd2 =", cmd2
                 cmd3 = "wget -qO - http://127.0.0.1/web/servicelistreload?mode=0 > /tmp/inst.txt 2>&1 &"
                 cmd4 = "rm -rf %s" % fdest1
                 cmd5 = "rm -rf /tmp/settings.zip"                
@@ -865,7 +859,7 @@ class NssDownloader(Screen):
 
     def fileDownload(self):
         from Tools.Downloader import downloadWithProgress
-        print('[download] downloading %s to %s' % (self.url, self.dstfilename))
+        print '[download] downloading %s to %s' % (self.url, self.dstfilename)
         self.download = downloadWithProgress(self.url, self.dstfilename)
         self.download.addProgress(self.progress)
         self.download.start().addCallback(self.finished).addErrback(self.failed)
@@ -880,7 +874,7 @@ class NssDownloader(Screen):
     def failed(self, failure_instance = None, error_message = ''):
         if error_message == '' and failure_instance is not None:
             error_message = failure_instance.getErrorMessage()
-        print('[Download_failed] ' + error_message)
+        print '[Download_failed] ' + error_message
         if fileExists(self.dstfilename):
             remove(self.dstfilename)
         self['fname'].text = _('Download file %s failed!') % self.filename
@@ -891,7 +885,7 @@ class NssDownloader(Screen):
 
     def finished(self, string = ''):
         if self.download:
-            print('[Download_finished] ' + str(string))
+            print '[Download_finished] ' + str(string)
             self.EVENT_CURR = self.EVENT_DONE
             self.downloading(False)
             self['oktext'].hide()
