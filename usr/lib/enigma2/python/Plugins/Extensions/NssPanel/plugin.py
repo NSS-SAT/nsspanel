@@ -1,4 +1,5 @@
 #updated Lululla 24/10/2018 Skin FHD
+#updated Lululla 24/10/2021 ipk fix
 PANELVER = '0.1.1'
 from Screens.Screen import Screen
 from Screens.MessageBox import MessageBox
@@ -30,11 +31,43 @@ import xml.etree.cElementTree as x
 import six
 
 #lululla
+from enigma import eListbox, eListboxPythonMultiContent, gFont
+from Components.MenuList import MenuList
+from enigma import RT_HALIGN_LEFT, RT_HALIGN_RIGHT, RT_HALIGN_CENTER, RT_VALIGN_CENTER, getDesktop, loadPNG
+
+class nssList(MenuList):
+    def __init__(self, list):
+        MenuList.__init__(self, list, False, eListboxPythonMultiContent)
+        self.l.setFont(0, gFont('Regular', 20))
+        self.l.setFont(1, gFont('Regular', 22))
+        self.l.setFont(2, gFont('Regular', 24))
+        self.l.setFont(3, gFont('Regular', 26))
+        self.l.setFont(4, gFont('Regular', 28))
+        self.l.setFont(5, gFont('Regular', 30))
+        self.l.setFont(6, gFont('Regular', 32))
+        self.l.setFont(7, gFont('Regular', 34))
+        self.l.setFont(8, gFont('Regular', 36))
+        self.l.setFont(9, gFont('Regular', 40))
+        self.l.setItemHeight(50)
+
+def oneListEntry(name):
+    res = [name]
+    res.append(MultiContentEntryText(pos=(60, 0), size =(1900, 50), font =6, text =name, color = 0xa6d1fe, flags =RT_HALIGN_LEFT | RT_VALIGN_CENTER))
+    return res
+
+def showlist(data, list):
+    icount = 0
+    plist = []
+    for line in data:
+        name = data[icount]
+        plist.append(oneListEntry(name))
+        icount = icount+1
+        list.setList(plist)
+
 def ReloadBouquet():
     eDVBDB.getInstance().reloadServicelist()
     eDVBDB.getInstance().reloadBouquets() 
     
-
 def GetSkinPath():
     myskinpath = resolveFilename(SCOPE_CURRENT_SKIN, '')
     myskinpath = '/usr/lib/enigma2/python/Plugins/Extensions/NssPanel/'
@@ -66,9 +99,10 @@ class util:
         self.eDVBDB.reloadServicelist()
         self.eDVBDB.reloadBouquets()
 
-
 u = util()
+#edit lululla
 
+        
 class loadTmpDir:
     tmp_list = []
 
@@ -122,7 +156,6 @@ class loadXml:
                  b.find('Check').text,
                  c1])
                 c1 += 1
-
             c += 1
 
 
@@ -144,7 +177,7 @@ class NssMenu(Screen):
 
     skin = '''
     <screen name="NSS Panel" position="center,center" size="1280,720" title="NSS Panel">
-    <widget source="list" render="Listbox" position="333,104" size="554,493" scrollbarMode="showOnDemand">
+    <widget source="list" render="Listbox" position="333,94" size="554,493" scrollbarMode="showOnDemand">
     <convert type="TemplatedMultiContent">
         {"template": [
         MultiContentEntryText(pos = (90, 5), size = (300, 30), font=0, flags = RT_HALIGN_LEFT | RT_HALIGN_LEFT, text = 1),
@@ -156,7 +189,7 @@ class NssMenu(Screen):
         }
     </convert>
     </widget>
-    <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/NssPanel/icons/logo.png" position="245,0" size="711,76" alphatest="on" />
+    <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/NssPanel/icons/logo.png" position="245,5" size="711,76" alphatest="on" />
     <widget source="conn" render="Label" position="247,600" size="812,35" font="Regular;30" halign="center" valign="center" transparent="1" />
     </screen>
     '''    
@@ -251,6 +284,7 @@ class NssMenu(Screen):
                 self.session.open(ScriptExecuter)
             elif sel == 'RebBox':
                 msg = _('Do you want reboot now?')
+                
                 box = self.session.openWithCallback(self.rebootBox, MessageBox, msg, MessageBox.TYPE_YESNO)
                 box.setTitle(_('Restart Decoder'))
         return
@@ -326,7 +360,7 @@ class ListaFile(Screen):
 
     skin = '''
     <screen name="DownloadsList" position="center,center" size="1280,720" title="Downloads">
-    <widget source="list" render="Listbox" position="125,80" size="905,447" zPosition="2" scrollbarMode="showOnDemand" transparent="1">
+    <widget source="list" render="Listbox" position="146,80" size="905,440" zPosition="2" scrollbarMode="showOnDemand" transparent="1">
     <convert type="TemplatedMultiContent">
            {"template": [
            MultiContentEntryText(pos = (5, 5), size = (720, 34), flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1),
@@ -336,12 +370,12 @@ class ListaFile(Screen):
            }
     </convert>
     </widget>
-
-    <widget source="conn" render="Label" position="125,582" size="930,70" font="Regular;30" halign="center" valign="center" transparent="1" />
-    <ePixmap position="116,532" size="34,47" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/NssPanel/buttons/key_red.png" alphatest="on" />
-    <ePixmap position="342,532" size="32,47" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/NssPanel/buttons/key_green.png" alphatest="on" />
-    <widget name="key_red" position="147,535" zPosition="1" size="209,40" font="Regular;30" halign="center" valign="center" backgroundColor="#009f1313" transparent="1" />
-    <widget name="key_green" position="373,535" zPosition="1" size="209,40" font="Regular;30" halign="center" valign="center" backgroundColor="#009f1313" transparent="1" />
+    <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/NssPanel/icons/logo.png" position="245,0" size="711,76" alphatest="on" />
+    <widget source="conn" render="Label" position="125,592" size="930,70" font="Regular;30" halign="center" valign="center" transparent="1" />
+    <ePixmap position="116,542" size="34,47" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/NssPanel/buttons/key_red.png" alphatest="on" />
+    <ePixmap position="342,542" size="32,47" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/NssPanel/buttons/key_green.png" alphatest="on" />
+    <widget name="key_red" position="147,545" zPosition="1" size="209,40" font="Regular;30" halign="center" valign="center" backgroundColor="#009f1313" transparent="1" />
+    <widget name="key_green" position="373,545" zPosition="1" size="209,40" font="Regular;30" halign="center" valign="center" backgroundColor="#009f1313" transparent="1" />
     </screen>
     '''
     
@@ -379,10 +413,9 @@ class ListaFile(Screen):
 class DownloadFile(Screen):
     __module__ = __name__
     #skin = '\n\t<screen name="DownloadsList" position="center,center" size="800,600" title="Downloads">\n\t  <widget source="list" render="Listbox" position="12,6" size="750,470" zPosition="2" scrollbarMode="showOnDemand" transparent="1">\n\t    <convert type="TemplatedMultiContent">\n\t           {"template": [\n\t           MultiContentEntryText(pos = (5, 5), size = (720, 34), flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1),\n\t           ],\n\t           "fonts": [gFont("Regular", 20)],\n\t           "itemHeight": 45\n\t          }\n\t        </convert>\n\t  </widget>\n\t  <ePixmap position="136,532" size="34,47" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/NssPanel/buttons/key_red.png" alphatest="on" />\n\t  <ePixmap position="422,532" size="32,47" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/NssPanel/buttons/key_green.png" alphatest="on" />\n\t  <widget source="conn" render="Label" position="137,476" size="540,48" font="Regular;20" halign="center" valign="center" transparent="1" />\n\t  <widget name="key_red" position="169,535" zPosition="1" size="209,40" font="Regular;20" halign="center" valign="center" backgroundColor="#009f1313" transparent="1" />\n\t  <widget name="key_green" position="453,535" zPosition="1" size="209,40" font="Regular;20" halign="center" valign="center" backgroundColor="#009f1313" transparent="1" />\n\t</screen>'
-
     skin = '''
     <screen name="DownloadsList" position="center,center" size="1280,720" title="Downloads">
-    <widget source="list" render="Listbox" position="125,80" size="905,447" zPosition="2" scrollbarMode="showOnDemand" transparent="1">
+    <widget source="list" render="Listbox" position="157,78" size="905,440" zPosition="2" scrollbarMode="showOnDemand" transparent="1">
     <convert type="TemplatedMultiContent">
         {"template": [
         MultiContentEntryText(pos = (5, 5), size = (720, 34), flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1),
@@ -392,13 +425,12 @@ class DownloadFile(Screen):
         }
     </convert>
     </widget>
-
-    <widget source="conn" render="Label" position="125,582" size="930,70" font="Regular;30" halign="center" valign="center" transparent="1" />
-    
-    <ePixmap position="116,532" size="34,47" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/NssPanel/buttons/key_red.png" alphatest="on" />
-    <ePixmap position="342,532" size="32,47" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/NssPanel/buttons/key_green.png" alphatest="on" />
-    <widget name="key_red" position="147,535" zPosition="1" size="209,40" font="Regular;30" halign="center" valign="center" backgroundColor="#009f1313" transparent="1" />
-    <widget name="key_green" position="373,535" zPosition="1" size="209,40" font="Regular;30" halign="center" valign="center" backgroundColor="#009f1313" transparent="1" />
+    <widget source="conn" render="Label" position="125,592" size="930,70" font="Regular;30" halign="center" valign="center" transparent="1" />
+    <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/NssPanel/icons/logo.png" position="245,0" size="711,76" alphatest="on" />
+    <ePixmap position="116,537" size="34,47" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/NssPanel/buttons/key_red.png" alphatest="on" />
+    <ePixmap position="342,537" size="32,47" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/NssPanel/buttons/key_green.png" alphatest="on" />
+    <widget name="key_red" position="147,540" zPosition="1" size="209,40" font="Regular;30" halign="center" valign="center" backgroundColor="#009f1313" transparent="1" />
+    <widget name="key_green" position="373,540" zPosition="1" size="209,40" font="Regular;30" halign="center" valign="center" backgroundColor="#009f1313" transparent="1" />
     </screen>
     '''    
     
@@ -482,10 +514,6 @@ class DownloadFile(Screen):
             elif u.filename.find('.tar.gz') != -1:
                 self.container.execute('tar -xzvf /tmp/' + u.filename + ' -C /')
                 self['conn'].text = _('Please wait..Installing!')
-                
-                
-                
-                
             else:
                 self['conn'].text = _('File: %s\nis not a valid package!') % u.filename
         elif fileExists('/tmp/' + u.filename):
@@ -534,7 +562,7 @@ class ManualInstall(Screen):
 
     skin = '''
     <screen name="ManualInstall" position="center,center" size="1280,720" title="Manual Install">
-    <widget source="list" render="Listbox" position="125,80" size="905,447" scrollbarMode="showOnDemand">
+    <widget source="list" render="Listbox" position="137,66" size="905,447" scrollbarMode="showOnDemand">
     <convert type="TemplatedMultiContent">
         {"template": [
         MultiContentEntryText(pos = (50, 5), size = (700, 30), font=0, flags = RT_HALIGN_LEFT | RT_HALIGN_LEFT, text = 1),
@@ -553,7 +581,7 @@ class ManualInstall(Screen):
     <widget name="key_green" position="373,535" zPosition="1" size="209,40" font="Regular;30" halign="center" valign="center" backgroundColor="#009f1313" transparent="1" />
     <widget name="key_yellow" position="605,535" zPosition="1" size="209,40" font="Regular;30" halign="center" valign="center" backgroundColor="#00a08500" transparent="1" />
     <widget name="key_blue" position="835,535" zPosition="1" size="209,40" font="Regular;30" halign="center" valign="center" backgroundColor="#00a08500" transparent="1" />
-    
+    <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/NssPanel/icons/logo.png" position="245,0" size="711,76" alphatest="on" />
     </screen>
     '''
     
@@ -704,46 +732,56 @@ class ManualInstall(Screen):
         system('killall -9 enigma2')
 
 
+            
 class RemoveAddons(Screen):
     __module__ = __name__
     # skin = '\n\t<screen name="Remove Addons" position="center,center" size="800,600" title="Remove Addons">\n\t  <widget source="list" render="Listbox" position="12,6" size="611,481" scrollbarMode="showOnDemand">\n\t    <convert type="TemplatedMultiContent">\n\t\t\t\t\t\t{"template": [\n\t\t\t\t\t\t\t\tMultiContentEntryText(pos = (50, 5), size = (300, 30), font=0, flags = RT_HALIGN_LEFT | RT_HALIGN_LEFT, text = 1),\n\t\t\t\t\t\t\t\t],\n\t\t\t\t\t\t"fonts": [gFont("Regular", 20)],\n\t\t\t\t\t\t"itemHeight": 40\n\t\t\t\t\t\t}\n\t\t\t\t</convert>\n\t  </widget>\n\t  <widget source="conn" render="Label" position="105,500" size="608,45" font="Regular;20" halign="center" valign="center" transparent="1" />\n\t  <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/NssPanel/buttons/key_red.png" position="275,550" size="34,47" alphatest="on" />\n\t  <widget name="key_red" position="311,553" zPosition="1" size="209,40" font="Regular;20" halign="center" valign="center" backgroundColor="#009f1313" transparent="1" />\n\t</screen>'
 
     skin = '''
     <screen name="Remove Addons" position="center,center" size="1280,720" title="Remove Addons">
-    <widget source="list" render="Listbox" position="125,80" size="905,448" scrollbarMode="showOnDemand">
-    <convert type="TemplatedMultiContent">
-        {"template": [
-        MultiContentEntryText(pos = (50, 5), size = (300, 30), font=0, flags = RT_HALIGN_LEFT | RT_HALIGN_LEFT, text = 1),
-        ],
-        "fonts": [gFont("Regular", 30)],
-        "itemHeight": 40
-        }
-        </convert>
-    </widget>
+	<widget name="list" position="164,113" size="875,400" font="Regular;20" itemHeight="40" scrollbarMode="showOnDemand" transparent="1" zPosition="5" foregroundColor="#00a0a0a0" foregroundColorSelected="#ffffff" backgroundColor="#20000000" backgroundColorSelected="#0b2049" />
     <widget source="conn" render="Label" position="125,582" size="930,70" font="Regular;30" halign="center" valign="center" transparent="1" />
     <ePixmap position="116,532" size="34,47" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/NssPanel/buttons/key_red.png" alphatest="on" />
     <widget name="key_red" position="147,535" zPosition="1" size="209,40" font="Regular;30" halign="center" valign="center" backgroundColor="#009f1313" transparent="1" />
+    <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/NssPanel/icons/logo.png" position="245,0" size="711,76" alphatest="on" />
     </screen>
     '''
-    
+    # skin = '''
+    # <screen name="Remove Addons" position="center,center" size="1280,720" title="Remove Addons">
+    # <widget source="list" render="Listbox" position="125,80" size="905,448" scrollbarMode="showOnDemand">
+    # <convert type="TemplatedMultiContent">
+        # {"template": [
+        # MultiContentEntryText(pos = (50, 5), size = (300, 30), font=0, flags = RT_HALIGN_LEFT | RT_HALIGN_LEFT, text = 1),
+        # ],
+        # "fonts": [gFont("Regular", 30)],
+        # "itemHeight": 40
+        # }
+        # </convert>
+    # </widget>
+    # <widget source="conn" render="Label" position="125,582" size="930,70" font="Regular;30" halign="center" valign="center" transparent="1" />
+    # <ePixmap position="116,532" size="34,47" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/NssPanel/buttons/key_red.png" alphatest="on" />
+    # <widget name="key_red" position="147,535" zPosition="1" size="209,40" font="Regular;30" halign="center" valign="center" backgroundColor="#009f1313" transparent="1" />
+    # </screen>
+    # '''    
     def __init__(self, session):
         Screen.__init__(self, session)
         self.list = []
-        self['list'] = List(self.list)
+        # self['list'] = List(self.list)
+
+        self['list'] = nssList([])        
         self['conn'] = StaticText('')
         self['key_red'] = Label(_('Remove'))
         self.container = eConsoleAppContainer()
         self.container.appClosed.append(self.runFinished)
-        try:
-            if not path.exists('/usr/uninstall'):
-                mkdir('/usr/uninstall', 493)
-        except:
-            pass
+        # try:
+            # if not path.exists('/usr/uninstall'):
+                # mkdir('/usr/uninstall', 493)
+        # except:
+            # pass
 
-        for fileinv in listdir('/usr/uninstall'):
-            if fileinv.startswith('._'):
-                remove(fileinv)
-
+        # for fileinv in listdir('/usr/uninstall'):
+            # if fileinv.startswith('._'):
+                # remove(fileinv)
         self['actions'] = ActionMap(['WizardActions', 'ColorActions'], {'ok': self.KeyOk,
          'back': self.cancel,
          'red': self.KeyOk})
@@ -753,39 +791,53 @@ class RemoveAddons(Screen):
         self.readTmp()
 
     def readTmp(self):
-        loadunidir.load()
-        del self.list[:]
-        if len(loadunidir.uni_list) > 0:
-            for fil in loadunidir.uni_list:
-                self.list.append((fil[1], fil[1][:-10]))
+        self.names = []
+        path = ('/var/lib/opkg/info')
+        if os.path.exists('/var/lib/dpkg/status'):
+            path= ('/var/lib/dpkg/info')
+        for root, dirs, files in os.walk(path):
+            if files != None:
+                files.sort()
+                for name in files:
+                    if name.endswith('.postinst') or name.endswith('.preinst') or name.endswith('.prerm') or name.endswith('.postrm'):
+                        continue
+                    if name.endswith('.md5sums') or name.endswith('.conffiles') or name.endswith('~') :
+                        continue
+                    if os.path.exists('/var/lib/dpkg/status'):
+                        if name.endswith('.list'):
+                            name= name.replace('.list', '')
+                    else:
+                        if name.endswith('.control'):
+                            name= name.replace('.control', '')
+                        if name.endswith('.list'):
+                            continue
+                    self.names.append(name)
+        showlist(self.names, self['list'])
 
-        else:
-            self['conn'].text = _('Nothing to uninstall!')
-        self['list'].setList(self.list)
-
+        
     def KeyOk(self):
         if not self.container.running():
-            if len(loadunidir.uni_list) > 0:
-                self.sel = self['list'].getIndex()
-                for p in loadunidir.uni_list:
-                    if p[0] == self.sel:
-                        u.filename = p[1]
-
-                msg = _('Are you sure you want remove the Package:\n%s?') % u.filename[:-10]
-                box = self.session.openWithCallback(self.removeAddons, MessageBox, msg, MessageBox.TYPE_YESNO)
-                box.setTitle(_('Remove Addon'))
-            else:
-                self.close()
-
+            self.session.openWithCallback(self.removeAddons, MessageBox,_("Do you want to remove?"), MessageBox.TYPE_YESNO)
+      
     def removeAddons(self, answer):
         if answer is True:
-            self['conn'].text = _('Removing: %s.\nPlease wait...') % u.filename[:-10]
-            self.container.execute('/usr/uninstall/' + u.filename)
+            idx = self['list'].getSelectionIndex()
+            if idx == -1 or None:
+                return
+            self.dom = self.names[idx]
+            com = self.dom
+            
+            self['conn'].text = _('Removing: %s.\nPlease wait...') % com
+            try:
+                self.container.execute('opkg remove --force-removal-of-dependent-packages %s' % com)
+            except:
+                self.container.execute('opkg remove %s' % com)
+                
 
     def runFinished(self, retval):
         plugins.readPluginList(resolveFilename(SCOPE_PLUGINS))
         self.readTmp()
-        self['conn'].text = _('Addons:\n %s \nPackege removed successfully.') % u.filename[:-10]
+        self['conn'].text = _('Addons:\n %s \nPackege removed successfully.') % self.dom
         msg = _('Enigma2 will be now hard restarted to complete package remove.\nDo You want restart enigma2 now?')
         box = self.session.openWithCallback(self.restartEnigma2, MessageBox, msg, MessageBox.TYPE_YESNO)
         box.setTitle(_('Restart enigma'))
@@ -1005,12 +1057,11 @@ class ScriptExecuter(Screen):
 
     skin = '''
     <screen name="Script Panel" position="center,center" size="1280,720">
-    
-    <widget source="list" render="Listbox" font="Regular;30" itemHeight="40" position="125,80" size="905,447" scrollbarMode="showOnDemand">
+    <widget source="list" render="Listbox" font="Regular;30" itemHeight="40" position="125,80" size="924,447" scrollbarMode="showOnDemand">
     <convert type="StringList" />
     </widget>
-    
-    <widget name="labstatus" position="136,582" size="895,48" font="Regular;30" valign="center" noWrap="1" backgroundColor="#333f3f3f" foregroundColor="#FFC000" shadowOffset="-2,-2" shadowColor="black" transparent="1" />
+    <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/NssPanel/icons/logo.png" position="245,0" size="711,76" alphatest="on" />
+    <widget name="labstatus" position="152,592" size="895,48" font="Regular;30" valign="center" noWrap="1" backgroundColor="#333f3f3f" foregroundColor="#FFC000" shadowOffset="-2,-2" shadowColor="black" transparent="1" />
     <ePixmap position="116,532" size="34,47" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/NssPanel/buttons/key_red.png" alphatest="on" />
     <widget name="key_red" position="147,535" zPosition="1" size="209,40" font="Regular;30" halign="center" valign="center" backgroundColor="#009f1313" transparent="1" />
     </screen>
