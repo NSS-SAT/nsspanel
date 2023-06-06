@@ -168,7 +168,7 @@ def linkAddons():
         f.close()
         return line[:-1]
     except:
-        return 'http://nonsolosat.net/nsspannelopen/file/'
+        return 'https://nonsolosat.net/nsspannelopen/file/'
 
 
 class NssMenu(Screen):
